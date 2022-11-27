@@ -1,1 +1,1 @@
-# saliency-mae
+# saliency_mae
