@@ -85,7 +85,8 @@ def get_args():
                         help='Training interpolation (random, bilinear, bicubic default: "bicubic")')
 
     # Dataset parameters
-    parser.add_argument('--data_path', default='/datasets01/imagenet_full_size/061417/train', type=str,
+    # parser.add_argument('--data_path', default='/datasets01/imagenet_full_size/061417/train', type=str,
+    parser.add_argument('--data_path', default='/home/data/train', type=str,
                         help='dataset path')
     parser.add_argument('--imagenet_default_mean_and_std', default=True, action='store_true')
 
@@ -116,6 +117,7 @@ def get_args():
     parser.add_argument('--local_rank', default=-1, type=int)
     parser.add_argument('--dist_on_itp', action='store_true')
     parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
+    parser.add_argument('--att_root', type=str)
 
     return parser.parse_args()
 
@@ -129,7 +131,9 @@ def get_model(args):
         drop_block_rate=None,
     )
     # ImageNet pretrained weights
-    ckpt_dir = '/PHShome/pep16/saliency-mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
+    # ckpt_dir = '/PHShome/pep16/saliency-mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
+    ckpt_dir = '/home/code/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
+
     ckpt = torch.load(ckpt_dir)
     '''
     from collections import OrderedDict

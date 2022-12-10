@@ -37,23 +37,43 @@ class DataAugmentationForMAE(object):
         # self.masked_position_generator = RandomMaskingGenerator(
         #     args.window_size, args.mask_ratio
         # )
-        self.masked_position_generator = SaliencyMaskGenerator(args.window_size, args.mask_ratio)
 
     def __call__(self, image):
-        return self.transform(image), self.masked_position_generator(image)
+        return self.transform(image)
 
     def __repr__(self):
         repr = "(DataAugmentationForBEiT,\n"
         repr += "  transform = %s,\n" % str(self.transform)
-        repr += "  Masked position generator = %s,\n" % str(self.masked_position_generator)
+        # repr += "  Masked position generator = %s,\n" % str(self.masked_position_generator)
         repr += ")"
         return repr
 
 
+class ImageFolderWithAttMap(ImageFolder):
+    def __init__(self, cfg, *args, **kwargs):
+        self.att_root = cfg.att_root # location of the attention maps
+        self.masked_position_generator = SaliencyMaskGenerator(cfg.window_size, cfg.mask_ratio)
+        super().__init__(*args, **kwargs)
+    
+    def __getitem__(self, index: int):
+        path, target = self.samples[index]
+        sample = self.loader(path)
+        if self.transform is not None:
+            sample = self.transform(sample)
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+
+        fn = os.path.split(path)[-1].split('.')[0] + '.png'
+        mask = self.masked_position_generator(os.path.join(self.att_root, fn))
+
+        return (sample, mask), target
+    def find_classes(self, dir: str):
+        return 
+
 def build_pretraining_dataset(args):
     transform = DataAugmentationForMAE(args)
     print("Data Aug = %s" % str(transform))
-    return ImageFolder(args.data_path, transform=transform)
+    return ImageFolderWithAttMap(args, args.data_path, transform=transform)
 
 
 def build_dataset(is_train, args):
