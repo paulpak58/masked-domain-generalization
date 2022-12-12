@@ -9,6 +9,7 @@ import os
 import torch
 
 from torchvision import datasets, transforms
+from torchvision.datasets import DatasetFolder
 
 from timm.data.constants import \
     IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, IMAGENET_INCEPTION_MEAN, IMAGENET_INCEPTION_STD
@@ -67,8 +68,8 @@ class ImageFolderWithAttMap(ImageFolder):
         mask = self.masked_position_generator(os.path.join(self.att_root, fn))
 
         return (sample, mask), target
-    def find_classes(self, dir: str):
-        return 
+    def find_classes(self, dir):
+        return [""], {"": 0}
 
 def build_pretraining_dataset(args):
     transform = DataAugmentationForMAE(args)

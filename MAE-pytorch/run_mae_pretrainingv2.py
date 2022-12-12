@@ -131,8 +131,8 @@ def get_model(args):
         drop_block_rate=None,
     )
     # ImageNet pretrained weights
-    # ckpt_dir = '/PHShome/pep16/saliency-mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
-    ckpt_dir = '/home/code/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
+    ckpt_dir = '/home/paulpak/Downloads/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
+    # ckpt_dir = '/home/code/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
 
     ckpt = torch.load(ckpt_dir)
     '''
