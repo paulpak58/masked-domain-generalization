@@ -118,6 +118,7 @@ def get_args():
     parser.add_argument('--dist_on_itp', action='store_true')
     parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
     parser.add_argument('--att_root', type=str)
+    parser.add_argument('--standard_mae', type=bool, default=False)
 
     return parser.parse_args()
 
@@ -171,7 +172,7 @@ def main(args):
     args.patch_size = patch_size
 
     # get dataset
-    dataset_train = build_pretraining_dataset(args)
+    dataset_train = build_pretraining_dataset(args, standard=args.standard_mae)
 
     if True:  # args.distributed:
         num_tasks = utils.get_world_size()

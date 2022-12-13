@@ -16,13 +16,13 @@ from timm.data.constants import \
 
 from timm.data import create_transform
 
-# from masking_generator import RandomMaskingGenerator
+from masking_generator import RandomMaskingGenerator
 from saliency_mask import SaliencyMaskGenerator
 from dataset_folder import ImageFolder
 
 
 class DataAugmentationForMAE(object):
-    def __init__(self, args):
+    def __init__(self, args, standard=False):
         imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
         mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
         std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
@@ -35,9 +35,11 @@ class DataAugmentationForMAE(object):
                 std=torch.tensor(std))
         ])
 
-        # self.masked_position_generator = RandomMaskingGenerator(
-        #     args.window_size, args.mask_ratio
-        # )
+        self.standard = standard
+        if standard:
+            self.masked_position_generator = RandomMaskingGenerator(
+                args.window_size, args.mask_ratio
+            )
 
     def __call__(self, image):
         return self.transform(image)
@@ -45,7 +47,8 @@ class DataAugmentationForMAE(object):
     def __repr__(self):
         repr = "(DataAugmentationForBEiT,\n"
         repr += "  transform = %s,\n" % str(self.transform)
-        # repr += "  Masked position generator = %s,\n" % str(self.masked_position_generator)
+        if self.standard:
+            repr += "  Masked position generator = %s,\n" % str(self.masked_position_generator)
         repr += ")"
         return repr
 
@@ -71,10 +74,13 @@ class ImageFolderWithAttMap(ImageFolder):
     def find_classes(self, dir):
         return [""], {"": 0}
 
-def build_pretraining_dataset(args):
+def build_pretraining_dataset(args, standard=False):
     transform = DataAugmentationForMAE(args)
     print("Data Aug = %s" % str(transform))
-    return ImageFolderWithAttMap(args, args.data_path, transform=transform)
+    if standard:
+        return ImageFolder(args.data_path, transform=transform)
+    else:
+        return ImageFolderWithAttMap(args, args.data_path, transform=transform)
 
 
 def build_dataset(is_train, args):
