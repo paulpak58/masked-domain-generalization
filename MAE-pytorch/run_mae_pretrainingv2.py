@@ -132,7 +132,8 @@ def get_model(args):
         drop_block_rate=None,
     )
     # ImageNet pretrained weights
-    ckpt_dir = '/home/paulpak/Downloads/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
+    # ckpt_dir = '/home/paulpak/Downloads/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
+    ckpt_dir = '/u/g/o/gozum/private/cs771/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
     # ckpt_dir = '/home/code/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
 
     ckpt = torch.load(ckpt_dir)
@@ -216,6 +217,7 @@ def main(args):
     print("Batch size = %d" % total_batch_size)
     print("Number of training steps = %d" % num_training_steps_per_epoch)
     print("Number of training examples per epoch = %d" % (total_batch_size * num_training_steps_per_epoch))
+    print(f'Standard MAE: {args.standard_mae}')
 
     if args.distributed:
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)

@@ -42,6 +42,8 @@ class DataAugmentationForMAE(object):
             )
 
     def __call__(self, image):
+        if self.standard:
+            return self.transform(image), self.masked_position_generator()
         return self.transform(image)
 
     def __repr__(self):
@@ -75,7 +77,7 @@ class ImageFolderWithAttMap(ImageFolder):
         return [""], {"": 0}
 
 def build_pretraining_dataset(args, standard=False):
-    transform = DataAugmentationForMAE(args)
+    transform = DataAugmentationForMAE(args, standard=standard)
     print("Data Aug = %s" % str(transform))
     if standard:
         return ImageFolder(args.data_path, transform=transform)
