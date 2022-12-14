@@ -19,11 +19,11 @@ nproc_per_node=1
 # mask_ratio=0.75
 # model=pretrain_mae_base_patch16_224
 model=vit_base_patch16_224
-batch_size=16
+batch_size=64
 opt=adamw
 opt_beta1=0.9
 opt_beta2=0.95
-warmup_epochs=40
+warmup_epochs=20
 epochs=100
 resume='/PHShome/pep16/saliency-mae/model_ckpts/mae_pretrain_vit_base.pth'
 
@@ -31,9 +31,11 @@ resume='/PHShome/pep16/saliency-mae/model_ckpts/mae_pretrain_vit_base.pth'
 # Set the path to save checkpoints
 home='/home'
 OUTPUT_DIR=${home}'/code/saliency_mae/outputs/finetune_mae_base_patch16_224'
+LOG_DIR=${home}'/code/saliency_mae/tensorboard_logs'
 DATA_PATH=${home}'/data2'
 SRC_PATH=${home}'/code/saliency_mae/MAE-pytorch/run_class_finetuning.py'
-MODEL_PATH=${home}'/code/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
+MODEL_PATH=${home}'/code/saliency_mae/model_ckpts/checkpoint-29.pth'
+# resume=${home}'/code/saliency_mae/outputs/finetune_mae_base_patch16_224/checkpoint-best.pth'
 
 # batch_size can be adjusted according to the graphics card
 OMP_NUM_THREADS=${OMP_NUM_THREADS} python -m torch.distributed.launch --nproc_per_node=${nproc_per_node} ${SRC_PATH} \
@@ -49,5 +51,5 @@ OMP_NUM_THREADS=${OMP_NUM_THREADS} python -m torch.distributed.launch --nproc_pe
         --warmup_epochs ${warmup_epochs} \
         --epochs ${epochs} \
         --output_dir ${OUTPUT_DIR} \
-        --dist_eval
+        --dist_eval > bruh.log
         # --resume ${resume}
