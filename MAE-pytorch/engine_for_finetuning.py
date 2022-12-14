@@ -165,8 +165,10 @@ def evaluate(data_loader, model, device):
     model.eval()
 
     for batch in metric_logger.log_every(data_loader, 10, header):
-        images = batch[0]
-        target = batch[-1]
+        if len(batch) == 2: 
+            images, target = batch
+        elif len(batch) == 3:
+            images, target, meta = batch
         images = images.to(device, non_blocking=True)
         target = target.to(device, non_blocking=True)
 
