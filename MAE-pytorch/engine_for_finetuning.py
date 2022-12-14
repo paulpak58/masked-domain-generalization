@@ -47,7 +47,14 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     else:
         optimizer.zero_grad()
 
-    for data_iter_step, (samples, targets) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
+    for data_iter_step, data in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
+        if len(data) == 2:
+            (samples, targets) = data
+        if len(data) == 3:
+            (samples, targets, meta) = data
+        else:
+            raise Exception("")
+
         step = data_iter_step // update_freq
         if step >= num_training_steps_per_epoch:
             continue

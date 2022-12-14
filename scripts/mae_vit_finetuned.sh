@@ -51,5 +51,5 @@ OMP_NUM_THREADS=${OMP_NUM_THREADS} python -m torch.distributed.launch --nproc_pe
         --warmup_epochs ${warmup_epochs} \
         --epochs ${epochs} \
         --output_dir ${OUTPUT_DIR} \
-        --dist_eval > bruh.log
+        --dist_eval > bruh2.log
         # --resume ${resume}

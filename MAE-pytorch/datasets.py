@@ -19,7 +19,7 @@ from timm.data import create_transform
 from masking_generator import RandomMaskingGenerator
 from saliency_mask import SaliencyMaskGenerator
 from dataset_folder import ImageFolder
-from wilds.datasets import iwildcam_dataset
+from wilds import get_dataset
 
 
 class DataAugmentationForMAE(object):
@@ -85,19 +85,6 @@ def build_pretraining_dataset(args, standard=False):
     else:
         return ImageFolderWithAttMap(args, args.data_path, transform=transform)
 
-class IWildCamDatasetWithTransforms(iwildcam_dataset.IWildCamDataset):
-    def __init__(self, transform=None, version=None, root_dir='data', download=False, split_scheme='official'):
-        self.transform = transform
-        super().__init__(version, root_dir, download, split_scheme)
-    
-    def get_input(self, idx):
-        x = super().get_input(idx)
-        return self.transform(x)
-
-    def __getitem__(self, idx):
-        x, y, meta = super().__getitem__(idx)
-        return x, y
-
 def build_dataset(is_train, args):
     transform = build_transform(is_train, args)
 
@@ -126,7 +113,9 @@ def build_dataset(is_train, args):
         assert len(dataset.class_to_idx) == nb_classes
     elif args.data_set == 'iwildcam':
         root = args.data_path if is_train else args.eval_data_path
-        dataset = IWildCamDatasetWithTransforms(transform=transform, root_dir=root, download=True)
+        dataset_full = get_dataset('iwildcam', root_dir=root, download=True)
+        split = 'train' if is_train else 'test'
+        dataset = dataset_full.get_subset(split, transform=transform)
         nb_classes = args.nb_classes
         assert dataset._n_classes == nb_classes
     else:
