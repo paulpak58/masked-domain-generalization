@@ -118,6 +118,7 @@ def get_args():
     parser.add_argument('--dist_on_itp', action='store_true')
     parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
     parser.add_argument('--att_root', type=str)
+    parser.add_argument('--standard_mae', type=bool, default=False)
 
     return parser.parse_args()
 
@@ -131,8 +132,9 @@ def get_model(args):
         drop_block_rate=None,
     )
     # ImageNet pretrained weights
-    # ckpt_dir = '/PHShome/pep16/saliency-mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
-    ckpt_dir = '/home/code/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
+    # ckpt_dir = '/home/paulpak/Downloads/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
+    ckpt_dir = '/u/g/o/gozum/private/cs771/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
+    # ckpt_dir = '/home/code/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
 
     ckpt = torch.load(ckpt_dir)
     '''
@@ -171,7 +173,7 @@ def main(args):
     args.patch_size = patch_size
 
     # get dataset
-    dataset_train = build_pretraining_dataset(args)
+    dataset_train = build_pretraining_dataset(args, standard=args.standard_mae)
 
     if True:  # args.distributed:
         num_tasks = utils.get_world_size()
@@ -215,6 +217,7 @@ def main(args):
     print("Batch size = %d" % total_batch_size)
     print("Number of training steps = %d" % num_training_steps_per_epoch)
     print("Number of training examples per epoch = %d" % (total_batch_size * num_training_steps_per_epoch))
+    print(f'Standard MAE: {args.standard_mae}')
 
     if args.distributed:
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)

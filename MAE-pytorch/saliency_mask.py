@@ -85,7 +85,7 @@ class SaliencyMaskGenerator:
 
     def __call__(self, filename):
         attn_map_dict = retrieve_saliency_map(filename, num_patches=(self.height, self.width))
-        mask = convert_saliency_to_mask(attn_map_dict)
+        mask = convert_saliency_to_mask(attn_map_dict, self.num_mask)
         return mask # [196]
 
 
