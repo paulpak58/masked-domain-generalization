@@ -15,11 +15,11 @@
 # conda activate saliency_mae
 
 OMP_NUM_THREADS=1
-nproc_per_node=4
+nproc_per_node=1
 # mask_ratio=0.75
 # model=pretrain_mae_base_patch16_224
 model=vit_base_patch16_224
-batch_size=128
+batch_size=16
 opt=adamw
 opt_beta1=0.9
 opt_beta2=0.95
@@ -29,15 +29,18 @@ resume='/PHShome/pep16/saliency-mae/model_ckpts/mae_pretrain_vit_base.pth'
 
 
 # Set the path to save checkpoints
-home='/PHShome/pep16'
-OUTPUT_DIR=${home}'/saliency-mae/outputs/finetune_mae_base_patch16_224'
-DATA_PATH=${home}'/saliency-mae/imagenette2/'
-SRC_PATH=${home}'/saliency-mae/MAE-pytorch/run_class_finetuning.py'
-MODEL_PATH=${home}'/saliency-mae/outputs/pretrain_mae_base_patch16_224/checkpoint-1599.pth'
+home='/home'
+OUTPUT_DIR=${home}'/code/saliency_mae/outputs/finetune_mae_base_patch16_224'
+DATA_PATH=${home}'/data2'
+SRC_PATH=${home}'/code/saliency_mae/MAE-pytorch/run_class_finetuning.py'
+MODEL_PATH=${home}'/code/saliency_mae/model_ckpts/pretrain_mae_vit_base_mask_0.75_400e.pth'
 
 # batch_size can be adjusted according to the graphics card
 OMP_NUM_THREADS=${OMP_NUM_THREADS} python -m torch.distributed.launch --nproc_per_node=${nproc_per_node} ${SRC_PATH} \
         --data_path ${DATA_PATH} \
+        --eval_data_path ${DATA_PATH}\
+        --data_set iwildcam \
+        --nb_classes 182\
         --model ${model} \
         --finetune ${MODEL_PATH} \
         --batch_size ${batch_size} \
